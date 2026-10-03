@@ -1,12 +1,12 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import glob
-import os
 import platform
 import shutil
 import subprocess
 import sys
-from pathlib import Path
+
+from studio2d.blender.runner import run_phase1_test
 
 
 def run_version(command: list[str]) -> str | None:
@@ -82,7 +82,9 @@ def get_memory() -> str:
         status = MEMORYSTATUSEX()
         status.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
 
-        ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status))
+        ctypes.windll.kernel32.GlobalMemoryStatusEx(
+            ctypes.byref(status)
+        )
 
         return human_memory(status.ullTotalPhys)
 
@@ -144,7 +146,11 @@ def doctor() -> int:
         print_item("Git", "NOT FOUND")
         failures += 1
 
-    print_item("Strategy", "INFO", "CPU-FIRST / SEQUENTIAL WORKERS")
+    print_item(
+        "Strategy",
+        "INFO",
+        "CPU-FIRST / SEQUENTIAL WORKERS",
+    )
 
     print("-" * 62)
 
@@ -152,7 +158,9 @@ def doctor() -> int:
         print("STATUS: READY")
         return 0
 
-    print(f"STATUS: {failures} REQUIRED TOOL(S) NEED ATTENTION")
+    print(
+        f"STATUS: {failures} REQUIRED TOOL(S) NEED ATTENTION"
+    )
     return 1
 
 
@@ -163,13 +171,17 @@ def main() -> int:
         print("Studio2D 0.0.1")
         print()
         print("Commands:")
-        print("  doctor    Check the local Studio2D environment")
+        print("  doctor         Check local Studio2D environment")
+        print("  blender-test   Run Blender automation proof")
         return 0
 
     command = args[0].lower()
 
     if command == "doctor":
         return doctor()
+
+    if command == "blender-test":
+        return run_phase1_test()
 
     print(f"Unknown command: {command}")
     return 2
